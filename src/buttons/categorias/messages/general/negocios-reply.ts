@@ -62,7 +62,7 @@ const negociosReply = async (ctx: Context): Promise<void> => {
     console.log("Ocorreu um problema ao deletar a mensagem!" + error);
   }
 
-  await ctx.reply("Lista dos canais diversos do nosso Bot!", {
+  await ctx.reply("Lista dos canais de negocios do nosso Bot!", {
     reply_markup: {
       inline_keyboard: channels,
       resize_keyboard: true,
