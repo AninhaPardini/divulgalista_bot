@@ -5,6 +5,8 @@ import Events from "./events";
 import { CronJob } from "cron";
 import channelsListMessage from "./messages/channels-list.message";
 
+// use `prisma` in your application to read and write data in your DB
+
 const token: string | undefined = process.env.TOKEN;
 if (!token) {
   throw new Error('"TOKEN" env var is required!');
@@ -12,33 +14,33 @@ if (!token) {
 
 const bot = new Telegraf(token);
 
-const jobMoring = new CronJob(
-  "* * 10 * *", // cronTime
-  function () {
-    bot.use(async (ctx, next) => {
-      channelsListMessage(ctx);
+// const jobMoring = new CronJob(
+//   "* * 10 * *", // cronTime
+//   function () {
+//     bot.use(async (ctx, next) => {
+//       channelsListMessage(ctx);
 
-      next();
-    });
-  }, // onTick
-  null, // onComplete
-  true, // start
-  "America/Sao_Paulo" // timeZone
-);
+//       next();
+//     });
+//   }, // onTick
+//   null, // onComplete
+//   true, // start
+//   "America/Sao_Paulo" // timeZone
+// );
 
-const jobEvening = new CronJob(
-  "* * 18 * *", // cronTime
-  function () {
-    bot.use(async (ctx, next) => {
-      channelsListMessage(ctx);
+// const jobEvening = new CronJob(
+//   "* * 18 * *", // cronTime
+//   function () {
+//     bot.use(async (ctx, next) => {
+//       channelsListMessage(ctx);
 
-      next();
-    });
-  }, // onTick
-  null, // onComplete
-  true, // start
-  "America/Los_Angeles" // timeZone
-);
+//       next();
+//     });
+//   }, // onTick
+//   null, // onComplete
+//   true, // start
+//   "America/Los_Angeles" // timeZone
+// );
 
 bot.telegram.getMe().then((bot) => {
   if (bot.is_bot) {
