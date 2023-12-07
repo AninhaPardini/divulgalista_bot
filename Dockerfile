@@ -10,6 +10,6 @@ RUN npm run build
 
 # RUN npx prisma generate
 
-RUN npx prisma migrate deploy
+RUN npx prisma migrate deploy --skip-generate
 
 CMD ["npm", "run", "start"]
