@@ -9,7 +9,7 @@ const infosMessage = async (ctx:Context) => {
     console.log('Ocorreu um problema ao deletar a mensagem!'+ error);
   }
 
-  await ctx.replyWithMarkdownV2(
+  await ctx.reply(
     'Manual de como usar o @DivulgaLista_Bot',
     {
       reply_markup: {
