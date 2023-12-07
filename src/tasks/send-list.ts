@@ -12,11 +12,11 @@ async function channelListMessage(bot: Telegraf) {
       [channels[i], channels[j]] = [channels[j], channels[i]];
     }
 
-    const links = channels.slice(0, 19).map((channel) => ({
+    const links = channels.slice(0, 19).map((channel) => ([{
       text: channel.title,
       callback_data: channel.title,
       url: channel.link_invite,
-    }));
+    }]));
 
     links.push([
       {
