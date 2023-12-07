@@ -1,5 +1,27 @@
 import { prisma } from "../db";
 
+const getChatIDs = async (): Promise<number[]> => {
+  const channels = await prisma.channel.findMany();
+  return channels.map((channel) => Number(channel.id));
+};
+
+const getRandomChannels = async (): Promise<string[][]> => {
+  const channels = await prisma.channel.findMany({
+    take: 19,
+    orderBy: {
+      id: "asc",
+    },
+  });
+
+  // Embaralha o array
+  for (let i = channels.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [channels[i], channels[j]] = [channels[j], channels[i]];
+  }
+
+  return channels.map((channel) => [channel.title, channel.link_invite]);
+};
+
 const createChannel = async (
   channelId: number,
   channelTitle: string,
@@ -44,24 +66,18 @@ const updateChannel = async (
 };
 
 const deleteChannel = async (chatId: number) => {
-  const channels = await prisma.channel.findMany({
-    where: {
-      user_id: chatId,
-    },
-  });
+  try {
 
-  // se o canal não existir, retorne o erro de canal não encontrado e se ele existir, verifique se o user tem mais de um canal, se tiver, delete o canal e se não tiver, delete o user
+    await prisma.channel.delete({
+      where: {
+        id: chatId,
+      },
+    });
 
-  if (channels === null || channels === undefined) {
-    console.log("Canal não encontrado");
-    return;
+  } catch (error) {
+    console.log(`Não consegui interação com o canal. error: ${error}`);
   }
 
-  await prisma.channel.delete({
-    where: {
-      user_id: chatId,
-    },
-  });
 };
 
 const upsertChannel = async (
@@ -95,4 +111,11 @@ const upsertChannel = async (
   });
 };
 
-export default { createChannel, updateChannel, deleteChannel, upsertChannel };
+export default {
+  createChannel,
+  updateChannel,
+  deleteChannel,
+  upsertChannel,
+  getChatIDs,
+  getRandomChannels,
+};

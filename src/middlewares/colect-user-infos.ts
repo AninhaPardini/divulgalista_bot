@@ -1,7 +1,7 @@
-import { Context, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import validatorChatId from "./validator-chat-id";
 import validatorMember from "./validator-member";
-import { prisma } from "../db";
+import colectFilter from "src/middlewares/channels-filter";
 
 const colectUserInfos = async (bot: Telegraf) => {
   bot.use(async (ctx, next) => {
@@ -30,6 +30,8 @@ const colectUserInfos = async (bot: Telegraf) => {
     console.log(lastName);
     console.log(userLanguage);
     console.log(userChatId);
+
+    colectFilter(ctx, userId, userName, chatId);
 
     next();
   });

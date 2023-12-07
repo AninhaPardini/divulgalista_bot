@@ -51,7 +51,7 @@ const channelListMessage = async (ctx: Context) => {
     return channelsList;
   });
   if (!channels) {
-    return;
+    return await ctx.reply("Não foi possível carregar a lista de canais!");
   }
 
   return await ctx.reply("Venha conferir os melhores canais aqui!", {

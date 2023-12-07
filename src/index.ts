@@ -3,7 +3,10 @@ import { Context, Telegraf } from "telegraf";
 import colectUserInfos from "./middlewares/colect-user-infos";
 import Events from "./events";
 import { CronJob } from "cron";
+
 import channelsListMessage from "./messages/channels-list.message";
+import colectData from "./middlewares/channels-filter";
+import { prisma } from "./db";
 
 // use `prisma` in your application to read and write data in your DB
 

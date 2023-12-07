@@ -1,10 +1,11 @@
 import { Telegraf } from "telegraf";
 import canaisCategorias from "./buttons/categorias";
-import startMessage from "./commands/start/start.command";
+import startMessage from "./commands/start/start";
 import backToHome from "./buttons/home";
 import infos from "./buttons/infos";
 import addChannels from "./buttons/channels";
-import helpMessage from "./commands/help/help.command";
+import helpMessage from "./commands/help/help";
+import participarDaLista from "./buttons/participar";
 
 const Events = (bot: Telegraf) => {
   startMessage(bot);
@@ -18,6 +19,8 @@ const Events = (bot: Telegraf) => {
   addChannels(bot);
 
   helpMessage(bot);
+
+  participarDaLista(bot);
 
   // Tratamento de erros
 

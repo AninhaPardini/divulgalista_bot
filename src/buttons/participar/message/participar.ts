@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
 
-const participarDaLista = async (ctx: Context) => {
+const participar = async (ctx: Context) => {
   try {
     await ctx.deleteMessage();
   }
@@ -33,4 +33,4 @@ const participarDaLista = async (ctx: Context) => {
   );
 };
 
-export default participarDaLista;
+export default participar;

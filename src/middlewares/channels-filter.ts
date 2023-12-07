@@ -1,21 +1,24 @@
-import { Context, Telegraf } from "telegraf";
+import { Context } from "telegraf";
 import { prisma } from "../db";
-import validatorUsername from "../middlewares/validator-username";
-import validatorChatId from "../middlewares/validator-chat-id";
 import channelsService from "../service/channels-service";
-import channelListMessage from "./channels-list.message";
+import channelListMessage from "../messages/channels-list.message";
+import validatorMember from "src/middlewares/validator-member";
+import isValidChannelMember from "src/middlewares/validator-members";
 
+const colectFilter = async (ctx: Context, userId: number, userName: string, chatId: number) => {
 
-const colectData = async (ctx: Context, bot: Telegraf, userId: number) => {
-  const botId: number = 6937764087;
-  const chatId = ctx.message?.chat.id;
-  const userUsername = ctx.from?.username;
+  const botId = ctx.botInfo?.id;
 
   if (chatId === undefined) {
+    
     return;
   }
 
-  if (userUsername === undefined) {
+  validatorMember(ctx, botId, chatId);
+
+  if (userName === undefined) {
+    ctx.reply( "Você precisa ter um username para estar na lista!");
+
     return;
   }
 
@@ -23,49 +26,77 @@ const colectData = async (ctx: Context, bot: Telegraf, userId: number) => {
 
   const isPrivateChannel: boolean | undefined = chatInfo.has_protected_content;
   if (isPrivateChannel === true) {
-    return ctx.reply("Você precisa ter um canal público para estar na lista!");
+    ctx.reply("Você precisa ter um canal público para estar na lista!");
+
+    return;
   }
 
   // Verificar se o chat é um canal
   if (chatInfo.type != "channel") {
+
     return;
   }
 
   const membersCount = await ctx.getChatMembersCount();
   console.log(membersCount);
 
-  if (process.env.NODE_ENV === "production" && membersCount < 100) {
-    return ctx.reply(
-      "Você precisa ter pelo menos 100 membros no canal para estar na lista!"
-    );
+  const isValid = await isValidChannelMember(membersCount, ctx);
+  if (!isValid) {
+    return;
   }
 
   const channelTitle: string = chatInfo.title;
   let hasInvite: string | undefined = chatInfo.invite_link;
   if (!hasInvite) {
+    (hasInvite = "n/a");
+
     return;
   }
   const inviteLink: string = hasInvite;
   let hasChannelUsername: string | undefined = chatInfo.username;
   if (!hasChannelUsername) {
-    return (hasChannelUsername = "n/a");
+    (hasChannelUsername = "n/a");
+
+    return;
   }
   const channelUsername = hasChannelUsername;
 
-  await prisma.user.upsert({
+  try {
+    const channelExists = await prisma.channel.findUnique({
+      where: {
+        id: chatId,
+      },
+    });
+    if (channelExists) {
+      ctx.reply(
+        "Esse canal já está na lista! Caso queira atualizar as informações, entre em contato com o @DivulgaLista_Bot!"
+      );
+
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await prisma.user.upsert({
     where: {
       id: userId,
     },
     update: {
-      username: userUsername,
+      username: userName,
     },
     create: {
       id: userId,
-      username: userUsername,
+      username: userName,
     },
   });
+  } catch (error) {
+    console.error('Erro ao adicionar usuario no banco de dados' + error);
+  }
 
-  channelsService.upsertChannel(
+  try{
+    channelsService.upsertChannel(
     chatId,
     channelTitle,
     channelUsername,
@@ -73,6 +104,10 @@ const colectData = async (ctx: Context, bot: Telegraf, userId: number) => {
     membersCount,
     userId
   );
+  } catch (error) {
+    console.error('Erro ao adicionar canal no banco de dados' + error);
+  }
+  
 
   // await prisma.channel.upsert({
   //   where: {
@@ -103,4 +138,4 @@ const colectData = async (ctx: Context, bot: Telegraf, userId: number) => {
   channelListMessage(ctx);
 };
 
-export default colectData;
+export default colectFilter;
