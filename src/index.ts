@@ -7,6 +7,11 @@ import { CronJob } from "cron";
 import channelsListMessage from "./messages/channels-list.message";
 import colectData from "./middlewares/channels-filter";
 import { prisma } from "./db";
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: 'https://e12276f43dacdef62f821357718fecad@o4506362818854912.ingest.sentry.io/4506362820493312',
+});
 
 import sendMessageTask from './tasks/send-list';
 
