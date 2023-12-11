@@ -55,7 +55,7 @@ async function channelListMessage(bot: Telegraf) {
 
 const sendMessageTask = (bot: Telegraf) => {
   const jobMoring = new CronJob(
-    "* 10 * * *", // cronTime
+    "00 10 * * *", // cronTime
     function () {
       channelListMessage(bot);
     }, // onTick
